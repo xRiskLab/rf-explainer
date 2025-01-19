@@ -64,7 +64,27 @@ analyzer = RandomForestAnalyzer(rf, features, ["Good", "Bad"])
 ```
 #### Create scores and visualize results:
 ```python
+import pandas as pd
+from matplotlib import pyplot as plt
+%config InlineBackend.figure_format = 'retina'
 
+from rf_explainer import RandomForestAnalyzer
+
+analyzer = RandomForestAnalyzer(rf, features, ["Good", "Bad"])
+tree_data = analyzer.extract_tree_data_with_conditions()
+leaf_data = analyzer.extract_leaf_nodes_with_conditions()
+scores_per_tree = analyzer.prediction_score(rf, X_test)
+
+plt.figure(figsize=(10, 6))
+pd.Series(scores_per_tree[y_test == 0]).hist(bins='sqrt', color='deepskyblue', edgecolor='black')
+pd.Series(scores_per_tree[y_test == 1]).hist(bins='auto', color='palegreen', edgecolor='black')
+plt.xlabel('Credit Score')
+plt.grid(False)
+plt.gca().spines['top'].set_visible(False)
+plt.gca().spines['right'].set_visible(False)
+plt.title('Random Forest Credit Score Distribution')
+plt.legend(['Approved', 'Declined'])
+plt.show()
 ```
 
 ![Score Visualization](docs/ims/score_distribution.png)
